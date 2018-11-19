@@ -15,14 +15,24 @@ def file_names():
 
 def feature_vector(file_path):
     """returns feature vector extracted from given image file"""
-    image = Image.open(file_path)
-    image_array = numpy.array(image).ravel()
-    return image_array
+    return image_array(file_path).ravel()
 
 
-def get_samples():
+def image_array(file_path):
+    """returns 2D image array"""
+    return numpy.array(Image.open(file_path))
+
+
+def get_1D_samples(scan_number=1):
     samples = []
     for f in file_names():
-        samples.append(feature_vector(PATH + f))
-    samples_np = numpy.array(samples)
-    return samples_np
+        if f.endswith(str(scan_number) + ".tif"):
+            samples.append(feature_vector(PATH + f))
+    return numpy.array(samples)
+
+
+def get_2D_samples():
+    samples = []
+    for f in file_names():
+        samples.append(image_array(PATH + f))
+    return numpy.array(samples)
