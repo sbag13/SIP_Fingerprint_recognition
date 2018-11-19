@@ -6,10 +6,10 @@ import numpy
 PATH = "./fingerprints/"
 
 
-def file_names():
+def file_names(scan_number=""):
     """returns list with names of all .tif files in fingerprints directory"""
     file_names = [file_name for file_name in listdir(PATH) if isfile(
-        join(PATH, file_name)) and file_name.endswith(".tif")]
+        join(PATH, file_name)) and file_name.endswith(scan_number + ".tif")]
     return file_names
 
 
@@ -23,11 +23,10 @@ def image_array(file_path):
     return numpy.array(Image.open(file_path))
 
 
-def get_1D_samples(scan_number=1):
+def get_1D_samples(scan_number=""):
     samples = []
-    for f in file_names():
-        if f.endswith(str(scan_number) + ".tif"):
-            samples.append(feature_vector(PATH + f))
+    for f in file_names(scan_number):
+        samples.append(feature_vector(PATH + f))
     return numpy.array(samples)
 
 
