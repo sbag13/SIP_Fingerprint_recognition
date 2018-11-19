@@ -83,11 +83,8 @@ class SOM(object):
 
             # This will extract the location of the BMU based on the BMU's
             # index
-            slice_input = tf.pad(tf.reshape(bmu_index, [1]),
-                                 np.array([[0, 1]]))
-            bmu_loc = tf.reshape(tf.slice(self._location_vects, slice_input,
-                                          tf.constant(np.array([1, 2]))),
-                                 [2])
+            slice_input = tf.pad(tf.reshape(bmu_index, [1]), np.array([[0, 1]]))
+            bmu_loc = tf.reshape(tf.slice(self._location_vects, slice_input, tf.cast(tf.constant(np.array([1, 2])), tf.int64)), [2])
 
             # To compute the alpha and sigma values based on iteration
             # number
