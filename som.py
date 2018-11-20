@@ -122,7 +122,7 @@ class SOM(object):
             self._sess = tf.Session()
 
             # INITIALIZE VARIABLES
-            init_op = tf.initialize_all_variables()
+            init_op = tf.global_variables_initializer()
             self._sess.run(init_op)
 
     def _neuron_locations(self, m, n):
