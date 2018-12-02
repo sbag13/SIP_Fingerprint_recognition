@@ -36,15 +36,19 @@ for x in range(len(samples)):
     else:
         samples_to_train.append(samples[x])
 
-samples_to_train = np.array([np.array(el) for el in samples_to_train]).astype(np.float32)
-samples_to_test = np.array(samples)[::8]
+samples_to_train = np.array([np.array(el).astype(np.float32) for el in samples_to_train])  # convert string to floats
+samples_to_test = np.array([np.array(el).astype(np.float32) for el in np.array(samples)[::8]])
 
 # ------------------ training network and testing --------------------------
 print('Initialising SOM.')
-som = SOM(30, 30, dim=1024, n_iterations=1)
+som = SOM(30, 30, dim=1024, n_iterations=100)
 print('Training SOM.')
 som.train(samples_to_train)
 
 print('Mapping test samples:')
-print(som.map_vects(samples_to_test))
+#  print(som.map_vects(samples_to_test))
+
+# test 1st print
+first_print_samples = np.array([np.array(el).astype(np.float32) for el in samples[:9]])
+print(som.map_vects(first_print_samples))
 
