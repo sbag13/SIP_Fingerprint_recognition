@@ -6,12 +6,11 @@ import numpy
 PATH = "./fingerprints/"
 
 
-def file_names(scan_number=""):
+def file_names(directory=PATH, file_ends_with=".tif"):
     """returns list with names of all .tif files in fingerprints directory"""
-    file_names = [file_name for file_name in listdir(PATH) if isfile(
-        join(PATH, file_name)) and file_name.endswith(scan_number + ".tif")]
+    file_names = [file_name for file_name in listdir(directory) if isfile(
+        join(directory, file_name)) and file_name.endswith(file_ends_with)]
     return file_names
-
 
 def feature_vector(file_path):
     """returns feature vector extracted from given image file"""

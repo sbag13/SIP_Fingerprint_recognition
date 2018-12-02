@@ -7,7 +7,7 @@ import os
 
 # Feature extractor
 def extract_features(image_path, vector_size=32):
-    image = imread(image_path, mode="RGB")
+    image = imread(image_path, mode="L")  # L - grey-scale
     try:
         # Using KAZE, cause SIFT, ORB and other was moved to additional module
         # which is adding addtional pain during install
