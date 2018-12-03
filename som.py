@@ -36,13 +36,13 @@ class SOM(object):
         self._m = m
         self._n = n
         if alpha is None:
-            self._alpha = 0.3
+            self._alpha = np.float64(0.3)
         else:
-            self._alpha = float(alpha)
+            self._alpha = np.float64(alpha)
         if sigma is None:
-            self._sigma = max(m, n) / 2.0
+            self._sigma = np.float64(max(m, n) / 2.0)
         else:
-            self._sigma = float(sigma)
+            self._sigma = np.float64(sigma)
         self._n_iterations = abs(int(n_iterations))
 
         # INITIALIZE GRAPH
@@ -59,8 +59,9 @@ class SOM(object):
                 self._weightage_vects = tf.Variable(weightages)
                 self._weightages = weightages
             else:
+                print("random weights") # debug
                 self._weightage_vects = tf.Variable(tf.random_normal(
-                    [m*n, dim]))
+                    [m*n, dim], dtype=tf.float64))
 
             # Matrix of size [m*n, 2] for SOM grid locations
             # of neurons
@@ -76,9 +77,9 @@ class SOM(object):
             # will be fed in during training
 
             # The training vector
-            self._vect_input = tf.placeholder("float", [dim])
+            self._vect_input = tf.placeholder("float64", [dim])
             # Iteration number
-            self._iter_input = tf.placeholder("float")
+            self._iter_input = tf.placeholder("float64")
 
             # CONSTRUCT TRAINING OP PIECE BY PIECE
             # Only the final, 'root' training op needs to be assigned as
@@ -103,7 +104,7 @@ class SOM(object):
 
             # To compute the alpha and sigma values based on iteration
             # number
-            learning_rate_op = tf.subtract(1.0, tf.div(self._iter_input,
+            learning_rate_op = tf.subtract(np.float64(1.0), tf.div(self._iter_input,
                                                        self._n_iterations))
             _alpha_op = tf.multiply(self._alpha, learning_rate_op)
             _sigma_op = tf.multiply(self._sigma, learning_rate_op)
@@ -115,7 +116,7 @@ class SOM(object):
                 self._location_vects, tf.stack(
                     [bmu_loc for i in range(m*n)])), 2), 1)
             neighbourhood_func = tf.exp(tf.negative(tf.div(tf.cast(
-                bmu_distance_squares, "float32"), tf.pow(_sigma_op, 2))))
+                bmu_distance_squares, "float64"), tf.pow(_sigma_op, 2))))
             learning_rate_op = tf.multiply(_alpha_op, neighbourhood_func)
 
             # Finally, the op that will use learning_rate_op to update
@@ -230,7 +231,7 @@ class SOM(object):
         np.save(output_weightages, self._weightages)
         np.save(output_locations, self._locations)
         with open(properties_path, 'w') as output:
-            output.write(json.dumps(self.get_properties))
+            output.write(json.dumps(self.get_properties()))
 
     def get_properties(self):
         properties = {}

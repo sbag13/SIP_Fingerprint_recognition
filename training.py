@@ -77,9 +77,10 @@ def load_samples():
 
 
 som = None
+trained_fingerprints_locations = None
 
 
-def initialize_som(n=30, m=30, max_iterations=100):
+def initialize_som(max_iterations=100, n=30, m=30):
     """
     max_iterations - indicates when som is fully trained
     """
@@ -102,15 +103,16 @@ def train(iterations):
     som.train(samples_to_train, iterations)
 
 
-def save_som():
-    som.save(output_properties_file, output_weightages, output_locations)
-
 def print_properties():
     global som
     if som is not None:
         print(som.get_properties())
     else:
         print("No som initialized!.")
+
+
+def save_som():
+    som.save(output_properties_file, output_weightages, output_locations)
 
 
 def load_som():
@@ -122,6 +124,50 @@ def load_som():
     som = SOM(properties["m"], properties["n"], properties["dim"], properties["n_iterations"],
               properties["alpha"], properties["sigma"], properties["trained_iterations"], weightages, locations, properties["trained"])
 
+
+def map_training_vects(n=30, m=30):
+    global som
+    global trained_fingerprints_locations
+    global samples_to_train
+    if som is None:
+        print("No som loaded.")
+        return
+    if len(samples_to_train) == 0:
+        load_samples()
+
+    trained_fingerprints_locations = np.zeros((n, m), dtype=int)
+    locations = som.map_vects(samples_to_train)
+    for i in range(len(locations)):
+        print(locations[i])  # debug
+        trained_fingerprints_locations[locations[i][0]][locations[i][1]] = i / 7 + 1
+
+
+def test_accuracy():
+    global som
+    global trained_fingerprints_locations
+    global samples_to_test
+    if som is None:
+        print("No som loaded.")
+        return
+    if len(samples_to_test) == 0:
+        load_samples()
+    if trained_fingerprints_locations is None:
+        map_training_vects()
+
+    locations = som.map_vects(samples_to_test)
+    for i in range(len(samples_to_test)):
+        idx = trained_fingerprints_locations[locations[i][0]][locations[i][1]]
+        if idx == i + 1:
+            print("HIT!")
+        else:
+            print("missed. test_number:%d, got_number:%d" % (i + 1, idx))
+
+
+initialize_som(1,30,30)
+train(100)
+map_training_vects(30,30)
+print(som._weightages) # lot of NaN's
+test_accuracy()
 
 # print('Mapping test samples:')
 #  print(som.map_vects(samples_to_test))
