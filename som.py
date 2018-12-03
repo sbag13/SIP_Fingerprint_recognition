@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-
+import json
 
 class SOM(object):
     """
@@ -11,7 +11,7 @@ class SOM(object):
     # To check if the SOM has been trained
     _trained = False
 
-    def __init__(self, m, n, dim, n_iterations=100, alpha=None, sigma=None):
+    def __init__(self, m, n, dim, n_iterations=100, alpha=None, sigma=None, trained_iteraions=0, weightages=None, locations=None, trained=None):
         """
         Initializes all necessary components of the TensorFlow
         Graph.
@@ -28,16 +28,20 @@ class SOM(object):
         """
 
         # Assign required variables first
+        if trained != None:
+            self._trained = bool(trained)
+        self._trained_iterations = abs(int(trained_iteraions))
         self._m = m
         self._n = n
+        self._dim = dim
         if alpha is None:
-            alpha = 0.3
+            self._alpha = 0.3
         else:
-            alpha = float(alpha)
+            self._alpha = float(alpha)
         if sigma is None:
-            sigma = max(m, n) / 2.0
+            self._sigma = max(m, n) / 2.0
         else:
-            sigma = float(sigma)
+            self._sigma = float(sigma)
         self._n_iterations = abs(int(n_iterations))
 
         # INITIALIZE GRAPH
@@ -50,20 +54,31 @@ class SOM(object):
 
             # Randomly initialized weightage vectors for all neurons,
             # stored together as a matrix Variable of size [m*n, dim]
-            self._weightage_vects = tf.Variable(tf.random_normal(
-                [m*n, dim]))
+            if weightages is not None:
+                print("loaded weights")
+                self._weightage_vects = tf.Variable(weightages)
+                self._weightages = weightages
+            else:
+                print("random weights")
+                self._weightage_vects = tf.Variable(tf.random_normal(
+                    [m*n, self._dim]))
 
             # Matrix of size [m*n, 2] for SOM grid locations
             # of neurons
-            self._location_vects = tf.constant(np.array(
-                list(self._neuron_locations(m, n))))
+            if locations is not None:
+                print("loaded locations")
+                self._location_vects = tf.constant(locations)
+                self._locations = locations
+            else:
+                self._location_vects = tf.constant(np.array(
+                    list(self._neuron_locations(m, n))))
 
             # PLACEHOLDERS FOR TRAINING INPUTS
             # We need to assign them as attributes to self, since they
             # will be fed in during training
 
             # The training vector
-            self._vect_input = tf.placeholder("float", [dim])
+            self._vect_input = tf.placeholder("float", [self._dim])
             # Iteration number
             self._iter_input = tf.placeholder("float")
 
@@ -90,8 +105,8 @@ class SOM(object):
             # number
             learning_rate_op = tf.subtract(1.0, tf.div(self._iter_input,
                                                   self._n_iterations))
-            _alpha_op = tf.multiply(alpha, learning_rate_op)
-            _sigma_op = tf.multiply(sigma, learning_rate_op)
+            _alpha_op = tf.multiply(self._alpha, learning_rate_op)
+            _sigma_op = tf.multiply(self._sigma, learning_rate_op)
 
             # Construct the op that will generate a vector with learning
             # rates for all neurons, based on iteration number and location
@@ -107,7 +122,7 @@ class SOM(object):
             # the weightage vectors of all neurons based on a particular
             # input
             learning_rate_multiplier = tf.stack([tf.tile(tf.slice(
-                learning_rate_op, np.array([i]), np.array([1])), [dim])
+                learning_rate_op, np.array([i]), np.array([1])), [self._dim])
                 for i in range(m*n)])
             weightage_delta = tf.multiply(
                 learning_rate_multiplier,
@@ -136,7 +151,7 @@ class SOM(object):
             for j in range(n):
                 yield np.array([i, j])
 
-    def train(self, input_vects):
+    def train(self, input_vects, iterations):
         """
         Trains the SOM.
         'input_vects' should be an iterable of 1-D NumPy arrays with
@@ -146,12 +161,27 @@ class SOM(object):
         """
 
         # Training iterations
-        for iter_no in range(self._n_iterations):
+        for iter_no in range(self._trained_iterations, self._trained_iterations + iterations):
+
+            if self._trained_iterations == self._n_iterations:
+                break
+            
+            self._trained_iterations += 1
+
+            print("Iteration %d/%d" %
+                  (iter_no + 1, self._n_iterations), end="\r")
+
             # Train with each vector one by one
             for input_vect in input_vects:
                 self._sess.run(self._training_op,
                                feed_dict={self._vect_input: input_vect,
                                           self._iter_input: iter_no})
+
+        if self._trained_iterations == self._n_iterations:
+            self._trained = True
+
+        print("Completed %d/%d" %
+              (self._trained_iterations, self._n_iterations))
 
         # Store a centroid grid for easy retrieval later on
         centroid_grid = [[] for i in range(self._m)]
@@ -161,7 +191,7 @@ class SOM(object):
             centroid_grid[loc[0]].append(self._weightages[i])
         self._centroid_grid = centroid_grid
 
-        self._trained = True
+        # self._trained = True
 
     def get_centroids(self):
         """
@@ -193,3 +223,21 @@ class SOM(object):
             to_return.append(self._locations[min_index])
 
         return to_return
+
+    def save(self, properties_path, output_weightages, output_locations):
+        np.save(output_weightages, self._weightages)
+        np.save(output_locations, self._locations)
+        with open(properties_path, 'w') as output:
+            output.write(json.dumps(self.get_properties()))
+
+    def get_properties(self):
+        properties = {}
+        properties["trained_iterations"] = self._trained_iterations
+        properties["n_iterations"] = self._n_iterations
+        properties["m"] = self._m
+        properties["n"] = self._n
+        properties["sigma"] = self._sigma
+        properties["alpha"] = self._alpha
+        properties["dim"] = self._dim
+        properties["trained"] = self._trained
+        return properties
