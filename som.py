@@ -11,7 +11,7 @@ class SOM(object):
     # To check if the SOM has been trained
     _trained = False
 
-    def __init__(self, m, n, dim, n_iterations=100, alpha=None, sigma=None):
+    def __init__(self, m, n, dim, n_iterations=100, alpha=None, sigma=None, trained_iteraions=0, weightages=None, locations=None, trained=None):
         """
         Initializes all necessary components of the TensorFlow
         Graph.
@@ -28,16 +28,20 @@ class SOM(object):
         """
 
         # Assign required variables first
+        if trained != None:
+            self._trained = bool(trained)
+        self._trained_iterations = trained_iteraions
+        self._dim = dim
         self._m = m
         self._n = n
         if alpha is None:
-            alpha = 0.3
+            self._alpha = 0.3
         else:
-            alpha = float(alpha)
+            self._alpha = float(alpha)
         if sigma is None:
-            sigma = max(m, n) / 2.0
+            self._sigma = max(m, n) / 2.0
         else:
-            sigma = float(sigma)
+            self._sigma = float(sigma)
         self._n_iterations = abs(int(n_iterations))
 
         # INITIALIZE GRAPH
@@ -50,13 +54,21 @@ class SOM(object):
 
             # Randomly initialized weightage vectors for all neurons,
             # stored together as a matrix Variable of size [m*n, dim]
-            self._weightage_vects = tf.Variable(tf.random_normal(
-                [m*n, dim]))
+            if weightages.any() != None:
+                self._weightage_vects = tf.Variable(weightages)
+                self._weightages = weightages
+            else:
+                self._weightage_vects = tf.Variable(tf.random_normal(
+                    [m*n, dim]))
 
             # Matrix of size [m*n, 2] for SOM grid locations
             # of neurons
-            self._location_vects = tf.constant(np.array(
-                list(self._neuron_locations(m, n))))
+            if locations.any() != None:
+                self._location_vects = tf.Variable(locations)
+                self._locations = locations
+            else:
+                self._location_vects = tf.constant(np.array(
+                    list(self._neuron_locations(m, n))))
 
             # PLACEHOLDERS FOR TRAINING INPUTS
             # We need to assign them as attributes to self, since they
@@ -83,15 +95,17 @@ class SOM(object):
 
             # This will extract the location of the BMU based on the BMU's
             # index
-            slice_input = tf.pad(tf.reshape(bmu_index, [1]), np.array([[0, 1]]))
-            bmu_loc = tf.reshape(tf.slice(self._location_vects, slice_input, tf.cast(tf.constant(np.array([1, 2])), tf.int64)), [2])
+            slice_input = tf.pad(tf.reshape(
+                bmu_index, [1]), np.array([[0, 1]]))
+            bmu_loc = tf.reshape(tf.slice(self._location_vects, slice_input, tf.cast(
+                tf.constant(np.array([1, 2])), tf.int64)), [2])
 
             # To compute the alpha and sigma values based on iteration
             # number
             learning_rate_op = tf.subtract(1.0, tf.div(self._iter_input,
-                                                  self._n_iterations))
-            _alpha_op = tf.multiply(alpha, learning_rate_op)
-            _sigma_op = tf.multiply(sigma, learning_rate_op)
+                                                       self._n_iterations))
+            _alpha_op = tf.multiply(self._alpha, learning_rate_op)
+            _sigma_op = tf.multiply(self._sigma, learning_rate_op)
 
             # Construct the op that will generate a vector with learning
             # rates for all neurons, based on iteration number and location
@@ -112,7 +126,7 @@ class SOM(object):
             weightage_delta = tf.multiply(
                 learning_rate_multiplier,
                 tf.subtract(tf.stack([self._vect_input for i in range(m*n)]),
-                       self._weightage_vects))
+                            self._weightage_vects))
             new_weightages_op = tf.add(self._weightage_vects,
                                        weightage_delta)
             self._training_op = tf.assign(self._weightage_vects,
@@ -136,7 +150,7 @@ class SOM(object):
             for j in range(n):
                 yield np.array([i, j])
 
-    def train(self, input_vects):
+    def train(self, input_vects, iterations):
         """
         Trains the SOM.
         'input_vects' should be an iterable of 1-D NumPy arrays with
@@ -145,13 +159,25 @@ class SOM(object):
         taken as starting conditions for training.
         """
 
+        if self._trained == True:
+            print("SOM is already trained")
+            return
+
         # Training iterations
-        for iter_no in range(self._n_iterations):
+        for _ in range(iterations):
+            self._trained_iterations += 1
+            print("Iteration %d/%d" % (self._trained_iterations, self._n_iterations), end="\r")
+            if self._trained_iterations == self._n_iterations:
+                self.end_of_training()
+                return
+
             # Train with each vector one by one
             for input_vect in input_vects:
                 self._sess.run(self._training_op,
                                feed_dict={self._vect_input: input_vect,
-                                          self._iter_input: iter_no})
+                                          self._iter_input: self._trained_iterations})
+
+        print("Completed %d/%d" % (self._trained_iterations, self._n_iterations))            
 
         # Store a centroid grid for easy retrieval later on
         centroid_grid = [[] for i in range(self._m)]
@@ -161,7 +187,9 @@ class SOM(object):
             centroid_grid[loc[0]].append(self._weightages[i])
         self._centroid_grid = centroid_grid
 
+    def end_of_training(self):
         self._trained = True
+        print('finished')
 
     def get_centroids(self):
         """
@@ -169,7 +197,8 @@ class SOM(object):
         the 'n' corresponding centroid locations as 1-D NumPy arrays.
         """
         if not self._trained:
-            raise ValueError("SOM not trained yet")
+            # raise ValueError("SOM not trained yet")
+            print("SOM not fully trained yet")
         return self._centroid_grid
 
     def map_vects(self, input_vects):
@@ -184,7 +213,8 @@ class SOM(object):
         """
 
         if not self._trained:
-            raise ValueError("SOM not trained yet")
+            # raise ValueError("SOM not trained yet")
+            print("SOM not fully trained yet")
 
         to_return = []
         for vect in input_vects:

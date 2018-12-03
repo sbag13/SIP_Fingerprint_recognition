@@ -1,6 +1,5 @@
 from PIL import Image, ImageChops
 
-
 def trim(input_path):
     im = Image.open(input_path)
     bg = Image.new(im.mode, im.size, im.getpixel((0, 0)))
