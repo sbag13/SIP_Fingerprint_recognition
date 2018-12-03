@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import json
 
 
 class SOM(object):
@@ -54,7 +55,7 @@ class SOM(object):
 
             # Randomly initialized weightage vectors for all neurons,
             # stored together as a matrix Variable of size [m*n, dim]
-            if weightages.any() != None:
+            if weightages is not None:
                 self._weightage_vects = tf.Variable(weightages)
                 self._weightages = weightages
             else:
@@ -63,7 +64,7 @@ class SOM(object):
 
             # Matrix of size [m*n, 2] for SOM grid locations
             # of neurons
-            if locations.any() != None:
+            if locations is not None:
                 self._location_vects = tf.Variable(locations)
                 self._locations = locations
             else:
@@ -165,11 +166,12 @@ class SOM(object):
 
         # Training iterations
         for _ in range(iterations):
-            self._trained_iterations += 1
-            print("Iteration %d/%d" % (self._trained_iterations, self._n_iterations), end="\r")
             if self._trained_iterations == self._n_iterations:
-                self.end_of_training()
-                return
+                self._trained = True
+                break
+            self._trained_iterations += 1
+            print("Iteration %d/%d" %
+                  (self._trained_iterations, self._n_iterations), end="\r")
 
             # Train with each vector one by one
             for input_vect in input_vects:
@@ -177,7 +179,11 @@ class SOM(object):
                                feed_dict={self._vect_input: input_vect,
                                           self._iter_input: self._trained_iterations})
 
-        print("Completed %d/%d" % (self._trained_iterations, self._n_iterations))            
+        if self._trained_iterations == self._n_iterations:
+            self._trained = True
+
+        print("Completed %d/%d" %
+              (self._trained_iterations, self._n_iterations))
 
         # Store a centroid grid for easy retrieval later on
         centroid_grid = [[] for i in range(self._m)]
@@ -186,10 +192,6 @@ class SOM(object):
         for i, loc in enumerate(self._locations):
             centroid_grid[loc[0]].append(self._weightages[i])
         self._centroid_grid = centroid_grid
-
-    def end_of_training(self):
-        self._trained = True
-        print('finished')
 
     def get_centroids(self):
         """
@@ -223,3 +225,21 @@ class SOM(object):
             to_return.append(self._locations[min_index])
 
         return to_return
+
+    def save(self, properties_path, output_weightages, output_locations):
+        np.save(output_weightages, self._weightages)
+        np.save(output_locations, self._locations)
+        with open(properties_path, 'w') as output:
+            output.write(json.dumps(self.get_properties))
+
+    def get_properties(self):
+        properties = {}
+        properties["trained_iterations"] = self._trained_iterations
+        properties["n_iterations"] = self._n_iterations
+        properties["m"] = self._m
+        properties["n"] = self._n
+        properties["sigma"] = self._sigma
+        properties["alpha"] = self._alpha
+        properties["dim"] = self._dim
+        properties["trained"] = self._trained
+        return properties

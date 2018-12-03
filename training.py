@@ -14,7 +14,6 @@ output_extracted_vector_file = 'extracted_vectors.txt'
 output_properties_file = 'som_properties.txt'
 output_weightages = './weightages'
 output_locations = './locations'
-output_session = './session.ckpt'
 
 samples = []
 samples_to_train = []
@@ -80,13 +79,20 @@ def load_samples():
 som = None
 
 
-def initialize_som(n=30, m=30, iterations=100):
+def initialize_som(n=30, m=30, max_iterations=100):
+    """
+    max_iterations - indicates when som is fully trained
+    """
     global som
     print('Initialising SOM.')
-    som = SOM(n, m, dim=1024, n_iterations=iterations)
+    som = SOM(n, m, dim=1024, n_iterations=max_iterations)
 
 
 def train(iterations):
+    """
+    Makes given number of training iterations, may be less than max_iterations of som
+    Initialize som and load samples if needed
+    """
     global som
     if len(samples_to_train) == 0:
         load_samples()
@@ -95,20 +101,16 @@ def train(iterations):
     print('Training SOM.')
     som.train(samples_to_train, iterations)
 
+
 def save_som():
-    properties = {}
-    properties["trained_iterations"] = som._trained_iterations
-    properties["n_iterations"] = som._n_iterations
-    properties["m"] = som._m
-    properties["n"] = som._n
-    properties["sigma"] = som._sigma
-    properties["alpha"] = som._alpha
-    properties["dim"] = som._dim
-    properties["trained"] = som._trained
-    np.save(output_weightages, som._weightages)
-    np.save(output_locations, som._locations)
-    with open(output_properties_file, 'w') as output:
-        output.write(json.dumps(properties))
+    som.save(output_properties_file, output_weightages, output_locations)
+
+def print_properties():
+    global som
+    if som is not None:
+        print(som.get_properties())
+    else:
+        print("No som initialized!.")
 
 
 def load_som():
@@ -127,7 +129,3 @@ def load_som():
 # test 1st print
 # first_print_samples = np.array([np.array(el).astype(np.float32) for el in samples[:9]])
 # print(som.map_vects(first_print_samples))
-
-# TODO
-# loop status prints
-# saving loading session
