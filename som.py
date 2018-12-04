@@ -224,11 +224,6 @@ class SOM(object):
 
         return to_return
 
-    def save(self, properties_path, output_weightages, output_locations):
-        np.save(output_weightages, self._weightages)
-        np.save(output_locations, self._locations)
-        with open(properties_path, 'w') as output:
-            output.write(json.dumps(self.get_properties()))
 
     def get_properties(self):
         properties = {}
