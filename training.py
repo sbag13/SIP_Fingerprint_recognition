@@ -37,17 +37,18 @@ def cropp_images():
         print('Images are cropped.')
 
 
-def load_feature_vec():
+def load_feature_vec(algorithm="kaze"):
     global samples
     if not os.path.isfile(output_extracted_vector_file):
         cropp_images()
         print('Generating feature vectors.')
         file_names_list = file_names(
             directory='./cropped_fingerprints/', file_ends_with='.png')
+        print("Algorithm: %s" % algorithm)
         for i, file in enumerate(file_names_list):
             print('Extracting %d/%d' % (i + 1, len(file_names_list)), end='\r')
             samples.append(extract_features(
-                image_path=cropped_images_path + file, vector_size=16))
+                image_path=cropped_images_path + file, algorithm=algorithm, vector_size=32))
         print('Saving feature vectors into: ' + output_extracted_vector_file)
         np.savetxt(output_extracted_vector_file, samples)
     else:
@@ -82,10 +83,10 @@ som = None
 trained_fingerprints_locations = None
 
 
-def initialize_som(max_iterations=100, n=30, m=30):
+def initialize_som(max_iterations=100, n=30, m=30, dim=1024):
     global som
     print('Initialising SOM. N iterations %d' % max_iterations)
-    som = SOM(n, m, dim=1024, n_iterations=max_iterations)
+    som = SOM(n, m, dim, n_iterations=max_iterations)
 
 
 def train(iterations=1):
@@ -288,3 +289,11 @@ def clear():
     samples_to_train = []
     som = None
     trained_fingerprints_locations = None
+
+def rm_features():
+    if os.path.isfile(output_extracted_vector_file):
+        print("Deleting features file.")
+        os.remove(output_extracted_vector_file)
+    else:
+        print("Features file does not exist.")
+
