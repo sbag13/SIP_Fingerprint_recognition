@@ -7,6 +7,7 @@ from cropp_image import trim
 import os
 import json
 import math
+from perceptron import *
 
 np.set_printoptions(threshold=np.nan)
 
@@ -48,7 +49,7 @@ def load_feature_vec(algorithm="kaze"):
         for i, file in enumerate(file_names_list):
             print('Extracting %d/%d' % (i + 1, len(file_names_list)), end='\r')
             samples.append(extract_features(
-                image_path=cropped_images_path + file, algorithm=algorithm, vector_size=32))
+                image_path=cropped_images_path + file, algorithm=algorithm, vector_size=16))
         print('Saving feature vectors into: ' + output_extracted_vector_file)
         np.savetxt(output_extracted_vector_file, samples)
     else:
@@ -82,6 +83,31 @@ def load_samples():
 som = None
 trained_fingerprints_locations = None
 
+def start_neural(model_name):
+    global samples_to_train
+    if len(samples_to_train) == 0:
+        load_samples()
+
+    output = []
+    for i in range(len(samples_to_train)):
+        elem = [0] * 51
+        elem[int(i/7)] = 1
+        output.append(elem)
+
+    startLearning(samples_to_train, output, model_name)
+
+def predict_neural(model_name):
+    global samples_to_test
+    if len(samples_to_test) == 0:
+        load_samples()
+
+    output = []
+    for i in range(len(samples_to_test)):
+        elem = [0] * 51
+        elem[i] = 1
+        output.append(elem)
+    
+    predict(samples_to_test, output, 'Testing data', model_name)
 
 def initialize_som(max_iterations=100, n=30, m=30, dim=1024):
     global som
