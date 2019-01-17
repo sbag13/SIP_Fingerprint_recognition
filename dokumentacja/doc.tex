@@ -1,0 +1,101 @@
+\documentclass[12pt, notitlepage]{article}
+
+\usepackage{geometry}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{url}
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\chapter}{\if@openright\cleardoublepage\else\clearpage\fi}{}{}{}
+\makeatother
+
+\usepackage[toc]{appendix}
+\renewcommand{\appendixtocname}{Dodatki}
+\renewcommand\refname{Odwołania}
+\usepackage[parfill]{parskip}
+% \setlength{\parindent}{0pt}
+% \setlength{\parskip}{\baselineskip}
+
+% \usepackage[
+%     backend=biber,
+%     style=alphabetic,
+%     sorting=ynt
+%     ]{biblatex}
+
+% \addbibresource{doc.bib}
+\geometry{legalpaper, margin=0.8in}
+
+\begin{document}
+
+\begin{titlepage}
+    \thispagestyle{empty}
+    \title{\textbf{
+        \Huge Systemy Inteligentnego Przetwarzania \\
+        [1cm]
+        \LARGE Rozpoznawanie osób na podstawie odcisków palców przy użyciu sieci Kohonena. 
+    }}
+    \author{
+        Szymon Bagiński \\ 
+        Dawid Aksamski \\
+        [1cm]
+        {\small Prowadzący: Dr inż. Jacek Mazurkiewicz}
+    }
+    % \author{Szymon Bagiński\thanks{funded by the ShareLaTeX team}}
+    \date{Styczeń 2018}
+    \maketitle
+    \vfill
+    % \renewcommand{\chapter}[2]{}
+    % \begin{center}
+    %     \Large \bfseries\contentsname
+    % \end{center}
+    % \tableofcontents
+    \vfill
+\end{titlepage}    
+
+% \chapter{Wstęp}
+% \addcontentsline{toc}{chapter}{Wstęp}
+
+\tableofcontents
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Wstęp}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Cel projektu}
+
+\subsection{Realizacja}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Podsumowanie}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\begin{thebibliography}{9}
+
+\bibitem{example}
+\textit{Django - przykładowo} [online], Data dostępu: 12.01.2019. 
+\newline\url{https://www.django-rest-framework.org/}.
+
+\end{thebibliography} 
+
+
+\newpage
+\setlength\parindent{24pt}
+\begin{appendices}
+
+\section{Dodatek}
+
+Może się przyda
+
+\end{appendices}
+
+\end{document}
