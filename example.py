@@ -9,5 +9,5 @@ from training import *
 # # # load_som('10_25_25')
 # test_accuracy()
 
-start_neural("./kaze_16_model.ckpt")
-predict_neural("./kaze_16_model.ckpt")
+start_neural("./null.ckpt")
+predict_neural("./null.ckpt")

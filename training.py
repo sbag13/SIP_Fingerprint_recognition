@@ -7,13 +7,15 @@ from cropp_image import trim
 import os
 import json
 import math
+import sys
 from perceptron import *
 
 np.set_printoptions(threshold=np.nan)
 
 original_images_path = './fingerprints/'
 cropped_images_path = './cropped_fingerprints/'
-output_extracted_vector_file = 'extracted_vectors.txt'
+# output_extracted_vector_file = 'extracted_vectors.txt'
+output_extracted_vector_file = 'null.txt'
 output_properties_file = '/som_properties.txt'
 output_weightages = '/weightages'
 output_locations = '/locations'
@@ -38,7 +40,7 @@ def cropp_images():
         print('Images are cropped.')
 
 
-def load_feature_vec(algorithm="kaze"):
+def load_feature_vec(algorithm="orb"):
     global samples
     if not os.path.isfile(output_extracted_vector_file):
         cropp_images()
@@ -50,6 +52,7 @@ def load_feature_vec(algorithm="kaze"):
             print('Extracting %d/%d' % (i + 1, len(file_names_list)), end='\r')
             samples.append(extract_features(
                 image_path=cropped_images_path + file, algorithm=algorithm, vector_size=16))
+        sys.exit()
         print('Saving feature vectors into: ' + output_extracted_vector_file)
         np.savetxt(output_extracted_vector_file, samples)
     else:
@@ -96,10 +99,29 @@ def start_neural(model_name):
 
     startLearning(samples_to_train, output, model_name)
 
+def continue_neural(model_name):
+    global samples_to_train
+    if len(samples_to_train) == 0:
+        load_samples()
+
+    output = []
+    for i in range(len(samples_to_train)):
+        elem = [0] * 51
+        elem[int(i/7)] = 1
+        output.append(elem)
+
+    continueLearning(samples_to_train, output, model_name)
+
 def predict_neural(model_name):
     global samples_to_test
     if len(samples_to_test) == 0:
         load_samples()
+
+    output_train = []
+    for i in range(len(samples_to_train)):
+        elem = [0] * 51
+        elem[int(i/7)] = 1
+        output_train.append(elem)
 
     output = []
     for i in range(len(samples_to_test)):
@@ -107,6 +129,7 @@ def predict_neural(model_name):
         elem[i] = 1
         output.append(elem)
     
+    predict(samples_to_train, output_train, 'Training data', model_name)
     predict(samples_to_test, output, 'Testing data', model_name)
 
 def initialize_som(max_iterations=100, n=30, m=30, dim=1024):

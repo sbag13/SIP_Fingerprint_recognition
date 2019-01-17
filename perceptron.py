@@ -2,10 +2,10 @@ import tensorflow as tf
 import sys, time
 
 learning_rate = 0.5
-tf_epochs = 5
+tf_epochs = 1
 
-inputSize = 1024
-L1Size = 512
+inputSize = 512
+L1Size = 256
 outputSize = 51
 std_dev = 0.03
 

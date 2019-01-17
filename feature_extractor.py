@@ -3,6 +3,7 @@ import numpy as np
 from scipy.misc import imread
 import _pickle as pickle
 import os
+from matplotlib import pyplot as plt
 
 def extract_features(image_path, algorithm, vector_size=32):
     image = imread(image_path, mode="L")  # L - grey-scale
@@ -41,6 +42,12 @@ def extract_features(image_path, algorithm, vector_size=32):
     except cv2.error as e:
         print('Error: ', e)
         return None
+
+    # printing keypoints
+    img2 = cv2.drawKeypoints(image, kps, None, color=(0,255,0), flags=0)
+    # plt.imshow(img2), plt.show()
+    file_name = image_path.split("/")[2]
+    cv2.imwrite("./keypoints_images/" + algorithm + "_" + str(vector_size) + "/" + file_name, img2)
 
     return dsc
 
