@@ -1,7 +1,8 @@
 # Fdb version 3
-["pdflatex"] 1547766374 "/home/sbag/Desktop/SIP/SIP_Fingerprint_recognition/dokumentacja/doc.tex" "doc.pdf" "doc" 1547766375
-  "/home/sbag/Desktop/SIP/SIP_Fingerprint_recognition/dokumentacja/doc.tex" 1547766374 2307 304e50273ece1b2d9cbd0885a867f102 ""
+["pdflatex"] 1547770093 "/home/sbag/Desktop/SIP/SIP_Fingerprint_recognition/dokumentacja/doc.tex" "doc.pdf" "doc" 1547770093
+  "/home/sbag/Desktop/SIP/SIP_Fingerprint_recognition/dokumentacja/doc.tex" 1547770092 4645 2fc86c4c729f32eb58933300baefc0e1 ""
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1543696176 2971 def0b6c1f0b107b3b936def894055589 ""
+  "/usr/share/texmf-dist/fonts/enc/dvips/pl/plrm.enc" 1543696176 1944 1845592c00bbe510359fd6887a83ff72 ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1543696176 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1543696176 3584 402da0b29eafbad07963b1224b222f18 ""
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1543696176 3584 13049b61b922a28b158a38aeff75ee9b ""
@@ -41,6 +42,7 @@
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb" 1543696176 131078 d96015a2fa5c350129e933ca070b2484 ""
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb" 1543696176 198221 ca5aa71411090ef358a6cc78b7458365 ""
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1200.pfb" 1543696176 167085 68de377d2744a68a88fa40a1f610615a ""
+  "/usr/share/texmf-dist/fonts/type1/public/pl/plr8.pfb" 1543696176 27613 078d72cee58a40f102986ecdd23ed1c6 ""
   "/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1543696176 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/share/texmf-dist/tex/generic/ifxetex/ifxetex.sty" 1543696176 1458 43ab4710dc82f3edeabecd0d099626b2 ""
   "/usr/share/texmf-dist/tex/generic/oberdiek/etexcmds.sty" 1543696176 7612 729a8cc22a1ee0029997c7f74717ae05 ""
@@ -87,10 +89,10 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1543696176 33301 a3134070eacafb10b1f371612ce2650d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1546462057 2838912 b46f507ebff11309c57c53ad13977ef4 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1546462054 7910427 27c6e717a783e630bf9c50d87f75c2f7 ""
-  "doc.aux" 1547766374 459 1bc895e139cba593c96f9a63ea74216e ""
-  "doc.tex" 1547766374 2307 304e50273ece1b2d9cbd0885a867f102 ""
+  "doc.aux" 1547770093 820 b278a7168e12b5ce427d1304a034a1c8 ""
+  "doc.tex" 1547770092 4645 2fc86c4c729f32eb58933300baefc0e1 ""
   (generated)
-  "doc.toc"
-  "doc.pdf"
-  "doc.log"
   "doc.aux"
+  "doc.pdf"
+  "doc.toc"
+  "doc.log"

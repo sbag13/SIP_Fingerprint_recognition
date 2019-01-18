@@ -71,7 +71,33 @@
 
 \subsection{Cel projektu}
 
+Celem projektu było stworzenie klasyfikatora odcisków palca, opartego o sieć Kohonena \cite{Kohonen}. Zadaniem sieci było rozpoznanie osoby, której odciski zostały użyte w procesie uczenia, na podstawie obrazu odcisku, który nie był w tym procesie wykorzystany. W temacie zadania nie zostały określone szczegółowe parametry sieci, takie jak na przykład jej pojemność, czy konkretne mechanizmy jakich należałoby użyć do stworzenia klasyfikatora, więc dostosowano je głównie do posiadanych możliwości.
+
 \subsection{Realizacja}
+
+Sieć Kohonena posiada ograniczoną pojemność, która jest równa ilości neuronów. Jej rozmiar jest więc bezpośrednio związany z ilością osób, które mają być rozpoznawane. Podczas pracy nad projektem skorzystano z darmowej bazy odcisków palca, dostępnej pod linkiem:\newline
+{
+    \parskip=0pt
+    % \begin{center}
+        \url{
+            https://www.neurotechnology.com/download/CrossMatch_Sample_DB.zip
+        }
+    % \end{center}
+}
+\newline
+Znajduje się tam 408 obrazów odcisków. Wśród nich jest po 8 różnych obrazów tego samego palca, tej samej osoby. Do trenowania klasyfikatora skorzystano z 7 z nich, natomiast jeden pozostawiono do oceny jego skuteczności. Pojemność sieci musiała więc wynosić conajmniej \( \frac{7}{8} \) ilości odcisków, co jest równe 357. W praktyce wykorzystywano siatki neuronów o rozmiarach np. 35x35, co daje 1225 neuronów i powinno w zupełności wystarczyć.
+
+Aby uzyskać dane, które można wprowadzić na wejście sieci Kohonena należy najpierw wydobyć cechy właściwe dla konkretnego odcisku oraz je odpowiednio przygotować. Proces ten został bardziej szczegółowo opisany w pubkcie \ref{sec:extraction}.
+
+Niezbędne jest także wstępne przetworzenie danych wejściowych, tak aby pozbyć się niepotrzebnych informacji, wyeliminować niedoskonałości, jeśli jest to możliwe lub uwydatnić cechy przydatne z punktu widzenia klasyfikacji. Ten krok został opisany w punkcie \ref{sec:preprocesing}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Opis implementacji}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Przetwarzanie wstępne obrazu}\label{sec:preprocesing}
+
+\subsection{Wydobywanie cech}\label{sec:extraction}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Podsumowanie}
@@ -81,9 +107,10 @@
 
 \begin{thebibliography}{9}
 
-\bibitem{example}
-\textit{Django - przykładowo} [online], Data dostępu: 12.01.2019. 
-\newline\url{https://www.django-rest-framework.org/}.
+\bibitem{Kohonen}
+\textit{Sieci neuronowe - Klasyfikator Kohonena} [online], Data dostępu: 18.01.2019. 
+\newline\url{http://galaxy.agh.edu.pl/~vlsi/AI/koho_t/}
+
 
 \end{thebibliography} 
 
