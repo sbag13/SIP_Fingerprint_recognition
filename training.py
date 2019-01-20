@@ -1,5 +1,5 @@
 from som import SOM
-from feature_extractor import extract_features
+from harris_corner_detection import extract_features
 from file import file_names
 import numpy as np
 from cropp_image import trim
@@ -20,8 +20,8 @@ else:
 
 if not os.path.isfile(output_file):
     print('Generating feature vectors.')
-    for file in file_names(directory='./cropped_fingerprints/', file_ends_with='.png'):
-        samples.append(extract_features(image_path=cropped_images_path + file, vector_size=16))
+    for file in file_names(directory=original_images_path, file_ends_with='.png'):
+        samples.append(extract_features(image_path=original_images_path + file))
     print('Saving feature vectors into: ' + output_file)
     np.savetxt(output_file, samples)
 else:
@@ -41,12 +41,12 @@ samples_to_test = np.array([np.array(el).astype(np.float32) for el in np.array(s
 
 # ------------------ training network and testing --------------------------
 print('Initialising SOM.')
-som = SOM(30, 30, dim=1024, n_iterations=100)
+som = SOM(30, 30, dim=241920, n_iterations=1)
 print('Training SOM.')
 som.train(samples_to_train)
 
 print('Mapping test samples:')
-#  print(som.map_vects(samples_to_test))
+print(som.map_vects(samples_to_test))
 
 # test 1st print
 first_print_samples = np.array([np.array(el).astype(np.float32) for el in samples[:9]])
