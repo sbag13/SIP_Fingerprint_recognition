@@ -103,6 +103,16 @@ Implementację można znaleźć w publicznym repozytorium programu git, pod adre
 \end{center}
 
 \subsection{Przetwarzanie wstępne obrazu}\label{sec:preprocesing}
+W celu zmaksymalizowania efektywności algorytmów detekcji cech, obrazy zostały poddane obróbce graficznej.
+
+\subsubsection{Progrowanie obrazu}
+Pierwszym etapem jest progowanie obrazu mające na celu przekształcenie obrazu do postaci binarnej. Obraz wejściowy jest w postaci odcienii szarości. Piksele powyżej zadanej wartości zostają zamienione na białe, a pozostałe na czarne. Wartość progrowa jest wyliczana na podstawie całego obrazu wejściowego. 
+
+\subsubsection{Odwrócenie kolorów}
+W celu zwiększenia efektywności procesu znajdowania szkieletu odcisku palca, kolory w obrazie zostają odwrócone. Odcisk palca z koloru czarnego zmieni się na biały, a tło z białego zmieni się na czarne. 
+
+\subsubsection{Znajdowanie szkieletu}
+Ostatnim etapem obróki obrazu odcisku palca jest znalezienie jego szkieletu. Poddaje się go algorytmowi zaimplementowanemu w bibliotece \textit{OpenCV}. Wynikiem tej obróki jest odcisk palca, w którym linie papilarne mają szerokoś jednego piksela. Pozwala to na uwydatnienie cech kluczowych danego odcisku palca.
 
 \subsection{Wydobywanie cech}\label{sec:extraction}
 
@@ -132,9 +142,9 @@ Algorytm SURF (Speeded up robust features) to lokalny detektor i deskryptor cech
 
 Algorytm ORB (Oriented FAST and Rotated BRIEF) został stworzony przez OpenCV Labs głównie dlatego, że SIFT i SURF są opatentowanymi algorytmami. Jest prawie dwukrotnie szybszy od algorytmu SURF. Najpierw Korzysta z algorytmu FAST\cite{fast} aby znaleźć punkty kluczowe, a następnie stosuje miarę Harris Corner (sekcja \ref{sec:harris}) aby znaleźć najbardziej znaczące z nich. Jako, że algorytm FAST nie oblicza orientacji jest on w przypadku ORB zmodyfikowany. Wektorem kierunku zostaje wektor od punktu narożnego w kierunku ważonego środka ciężkości okrągłego regionu sąsiedztwa. Do generowania deskryptorów (binarnych) korzysta z algorytmu BRIEF\cite{brief}, ale macierz próbek jest obrócona zgodnie z wektorem kierunku danego piksela znalezionym w poprzednim kroku.
 
-\subsubsection{Algorytm Harris Corner} \label{sec:harris}
+\subsubsection{Detektor Harris Corner} \label{sec:harris}
 
-TODO
+Datektor Harris Corner\cite{harris_corner} służy do znajdowania na obrazie krawędzi oraz innych punktów szczególnych. Dla małych wycinków obrazu wyliczna on wynik, następnie przesuwa okno o zadaną odległość i liczy wynik. Gdy wynik znacząco różni się od poprzedniego, oznacza to, że znajduje się w tym miejscu krawędź lub element charakterystyczny dla badanego obrazu.
 
 \subsection{Implementacja sieci Kohonena}
 
@@ -199,6 +209,10 @@ gdzie $y_j^{(i)}$ jest wzorcowym wyjściem dla próbki $j$, $y_{j\_}^{(i)}$ jest
 \bibitem{brief}
 \textit{BRIEF (Binary Robust Independent Elementary Features) } [online], Data dostępu: 18.01.2019. 
 \newline\url{https://docs.opencv.org/3.1.0/dc/d7d/tutorial_py_brief.html}
+
+\bibitem{harris_corner}
+\textit{Combined corner and edge detector } [online], Data dostępu: 20.01.2019. 
+\newline\url{http://www.bmva.org/bmvc/1988/avc-88-023.pdf}
 
 \bibitem{fast}
 \textit{FAST Algorithm for Corner Detection} [online], Data dostępu: 18.01.2019. 
