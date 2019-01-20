@@ -1,5 +1,6 @@
 fingerprints/*.tif
 cropped_fingerprints/*.png
+fingerprints2/*.tif
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

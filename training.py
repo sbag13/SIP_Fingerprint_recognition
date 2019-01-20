@@ -1,6 +1,6 @@
 from itertools import product
 from som import SOM
-from feature_extractor import extract_features
+from harris_corner_detection import extract_features
 from file import file_names
 import numpy as np
 from cropp_image import trim
@@ -23,9 +23,6 @@ output_locations = '/locations'
 samples = []
 samples_to_train = []
 samples_to_test = []
-
-# ------------------ preparing data to train and test --------------------------
-
 
 def cropp_images():
     if len(os.listdir(cropped_images_path)) == 0:
