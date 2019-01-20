@@ -14,5 +14,3 @@
 \contentsline {section}{\numberline {3}Podsumowanie}{4}
 \contentsline {subsection}{\numberline {3.1}Wyniki}{4}
 \contentsline {subsection}{\numberline {3.2}Wnioski}{4}
-\contentsline {section}{Dodatki}{6}
-\contentsline {section}{\numberline {A}Dodatek}{6}
