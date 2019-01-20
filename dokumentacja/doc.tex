@@ -71,7 +71,7 @@
 
 \subsection{Cel projektu}
 
-Celem projektu było stworzenie klasyfikatora odcisków palca, opartego o sieć Kohonena \cite{Kohonen}. Zadaniem sieci było rozpoznanie osoby, której odciski zostały użyte w procesie uczenia, na podstawie obrazu odcisku, który nie był w tym procesie wykorzystany. W temacie zadania nie zostały określone szczegółowe parametry sieci, takie jak na przykład jej pojemność, czy konkretne mechanizmy jakich należałoby użyć do stworzenia klasyfikatora, więc dostosowano je głównie do posiadanych możliwości.
+Celem projektu było stworzenie klasyfikatora odcisków palca, opartego o sieć Kohonena\cite{Kohonen}. Zadaniem sieci było rozpoznanie osoby, której odciski zostały użyte w procesie uczenia, na podstawie obrazu odcisku, który nie był w tym procesie wykorzystany. W temacie zadania nie zostały określone szczegółowe parametry sieci, takie jak na przykład jej pojemność, czy konkretne mechanizmy jakich należałoby użyć do stworzenia klasyfikatora, więc dostosowano je głównie do posiadanych możliwości.
 
 \subsection{Realizacja}
 
@@ -91,26 +91,130 @@ Aby uzyskać dane, które można wprowadzić na wejście sieci Kohonena należy 
 
 Niezbędne jest także wstępne przetworzenie danych wejściowych, tak aby pozbyć się niepotrzebnych informacji, wyeliminować niedoskonałości, jeśli jest to możliwe lub uwydatnić cechy przydatne z punktu widzenia klasyfikacji. Ten krok został opisany w punkcie \ref{sec:preprocesing}.
 
+Do weryfikacji działania sieci Kohonena, do namierzenia ewentualnych błędów i do wyciągnięcia wniosków, na końcu projektu stworzono prosty perceptron z jedną warstwą ukrytą, co jest opisane w sekcji \ref{sec:perceptron}. Do implementacji perceptronu, ale także i do sieci Kohonena, skorzystanon z biblioteki TensorFlow, która posiada wiele wbudowanych algorytmów przydatnych w tego typu zadaniach. 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Opis implementacji}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Implementację można znaleźć w publicznym repozytorium programu git, pod adresem:
+\begin{center}
+    \url{https://github.com/sbag13/SIP_Fingerprint_recognition}
+\end{center}
 
 \subsection{Przetwarzanie wstępne obrazu}\label{sec:preprocesing}
 
 \subsection{Wydobywanie cech}\label{sec:extraction}
 
+Po przetworzeniu obrazów odcisków palca należy je sprowadzić do poziomu wektora cech. Sieci Kohonena to tak naprawdę funkcje przyjmujące na wejściu zestaw liczb. Należy więc przedstawić obraz odcisku, bądź jego charakterystykę tak aby można go było podać na wejście takiej sieci. Służą do tego dedykowane algorytmy ekstrahowania cech. Poniżej zostały opisane algorytmy dostępne w bibliotece opencv\cite{opencv}, które zostały użyte w tym projekcie.
+
+\subsubsection{Algorytm Kaze}
+
+Algorytm Kaze wieloskalowy detektor cech w obrazach 2D oraz algorytm opisujący w nieliniowych skalach. W przeciwieństwie do SIFT i SURF, które wykorzystują liniową dyfuzję (przenikanie cząstek), operuje na nieliniowych skalach (cechy na wielu poziomach). Wykorzystuje rozmycie nieliniowe, w przeciwieństwie do wspomnianych wcześniej algorytmów co zapewnia rozmywanie cech nieistotnych dla obrazu, a uwypuklanie cech kluczowych.
+
+\subsubsection{Algorytm Sift}
+
+Algorytm SIFT (skaloniezmiennicze przekształcenie cech) został opracowany w celu wykrywania powtarzających się sekwencji. Używany jest również do śledzenia, rozpoznawania obiektów jak również do łączenia obrazów w panoramy. Celem algorytmu jest wyznaczenia punktów, które są nizmiennicze ze względu na skalowanie i obroty, a częściowo niezminnicze na zmiany oświetlenia i punktu widzenia (zmiany perspektywy).
+
+Punkty skaloniezmiennicze są wydobywane w kilku krokach:
+\begin{enumerate}
+    \item Wykrywanie punktów ekstremalnych (scale space extrema detection).
+    \item Dokładna lokalizacja punktów charakterystycznych (accurate keypoint location).
+    \item Przypisanie orientacji punktom charakterystycznym (keypoint orientation assignment).
+    \item Tworzenie deskryptorów punktów charakterystycznych (keypoint descriptors).
+\end{enumerate}
+
+\subsubsection{Algorytm Surf}
+
+Algorytm SURF (Speeded up robust features) to lokalny detektor i deskryptor cech obrazu. Może być używany do zadań takich jak rozpoznawanie obiektów, rejestracja obrazów, klasyfikacja lub rekonstrukcja 3D. Częściowo zainspirowany jest deskryptorem skalowalności cechującym SIFT (scale-invariant feature transform). Standardowa wersja SURF jest kilka razy szybsza niż SIFT, a jego autorzy uważają, że jest bardziej odporny na różne przekształcenia obrazu niż SIFT.
+
+\subsubsection{Algorytm Orb}
+
+Algorytm ORB (Oriented FAST and Rotated BRIEF) został stworzony przez OpenCV Labs głównie dlatego, że SIFT i SURF są opatentowanymi algorytmami. Jest prawie dwukrotnie szybszy od algorytmu SURF. Najpierw Korzysta z algorytmu FAST\cite{fast} aby znaleźć punkty kluczowe, a następnie stosuje miarę Harris Corner (sekcja \ref{sec:harris}) aby znaleźć najbardziej znaczące z nich. Jako, że algorytm FAST nie oblicza orientacji jest on w przypadku ORB zmodyfikowany. Wektorem kierunku zostaje wektor od punktu narożnego w kierunku ważonego środka ciężkości okrągłego regionu sąsiedztwa. Do generowania deskryptorów (binarnych) korzysta z algorytmu BRIEF\cite{brief}, ale macierz próbek jest obrócona zgodnie z wektorem kierunku danego piksela znalezionym w poprzednim kroku.
+
+\subsubsection{Algorytm Harris Corner} \label{sec:harris}
+
+TODO
+
+\subsection{Implementacja sieci Kohonena}
+
+Sieć Kohonena należy do rzadkiej domeny uczenia bez nadzoru w sieciach neuronowych. Jest to w istocie siatka neuronów, z których każdy oznacza jedną grupę wyuczoną podczas treningu. W sztucznych sieciach neuronowych zazwyczaj nie rozważa się lokalizacji neuronów. Jednak w SOM, każdy neuron ma konkretną lokalizację, a neurony leżące blisko siebie reprezentują gromady o podobnych właściwościach. Każdy neuron posiada wektor wagowy, które podczas procesu uczenia zostały dostrojone tak, aby dany neuron reagował najmocniej na podobne dane wejściowe. Proces uczenia polega na wybraniu nauronów, które odpowiadają za daną grupę rozwiązań. Odbywa się to zazwyczaj prze losowanie wag i określenie, która z odpowiedzi neuronów była najmocniejsza. Dalej iteracyjnie zmienia się wagi, tak aby zwiększyć jeszcze bardziej odpowiedź nauronu zwycięzcy (WTA - Winner Takes All) i ewentualnie jego sąsiadów (WTM - Winner Takes Most). W tym eksperymencie zastosowano strategię WTM.
+
+Do tworzenia różnych sieci Kohonena stworzono specjalną klasę, która pozwala na sparametryzowanie tego procesu. Na topologię sieci wybrano prostokątną siatkę 2D. Poniżej zaprezentowane najważniejsze parametry z punktu widzenia projektowania sieci.
+\begin{itemize}
+    \item Wymiar - Dwie liczby całkowite określające rozmiar siatki neuronów. 
+    \\Parametr obowiązkowy.
+    \item Ilość iteracji - Całkowita liczba określająca ilość iteracji do wykonania.
+    \\Parametr opcjonalny. Domyślna wartość: 100.
+    \item Alfa - liczba rzeczywista określająca jak mocno mają być modifikowane wagi aby wzmacniać odpowiednie neurony.
+    \\Parametr opcjonalny. Domyślna wartość: 0.3.
+    \item Sigma - liczba określająca wielkość sąsiedztwa neuronu.
+    \\ Parametr opcjonalny. Domyślną wartość stanowi połowa większego z wymiarów.
+\end{itemize}
+
+Zasadniczym elementem sieci Kohonena jest funkcja okreslająca, który z neuronów pasuje najlepiej do danych wejściowych (ang. bmu - best matching unit). W tym przypadku będzie to neuron, dla którego wartość poniższego równania będzie jak najmniejsza.
+\begin{center}
+    $ bmu = \sqrt{\sum (w - x)^2} $ \\
+\end{center}
+\textit{w} - wektor wag pojedynczego nauronu. \\
+\textit{x} - wektor danych wejściowych.
+
+Wartości alfa oraz sigma, wraz z postępem procesu uczenia, są modyfikowane w każdej iteracji, tak aby kolejne zmiany sieci były coraz mniejsze. Odbywa się to poprzez pomnożenie ich przez tak zwany współczynnik uczenia \textit{l}, który oblicza się według wzoru:
+\begin{center}
+    $ l = 1 - \frac{i}{n} $ \\
+\end{center}
+\textit{i} - numer bieżącej iteracji. \\
+\textit{n} - ilość wszystkich iteracji do wykonania.
+
+Modyfikacja wag bierze pod uwagę wszystkie przykłady trenujące. Należy pamietać, że wszystkie opisywane operację są operacjami na macierzach. Zmiana wartości wag dla konkretnego neuronu jest sumą delt obliczonych względem każdego przypadku treningowego. Delty są natomiast różnicą między wagami danego neuronu, a konkretnym zestawem danych wejściowych, pomnożoną przez współczynnik modyfikacji \textit{m}, wyrażony równaniem:
+\begin{center}
+    $ m = \alpha \cdot e^{-(\frac{D}{\sigma})^2} $ \\
+\end{center}
+$\alpha$ - parametr alfa sieci. \\
+$\sigma$ - parametr sigma sieci. \\
+\textit{D} - odległość euklidesowa do wektora zwycięzcy. \\
+Z powyższego równania można wywnioskować, że wartość współczynnika modyfikacji maleje dla coraz większych wartości D. To znaczy, że im neuron jest bardziej oddalony od neuronu zwycięzcy tym mniej zostanie nagrodzony zmianą wag. Widać także, że wartość ta zależy także od współczynnika $\sigma$, który wraz z postępem uczenia maleje. Wartość współczynnika \textit{m} również będzie maleć dzięki temu. W praktyce oznacza to ograniczenie wielkości sąsiedztwa.
+
+\subsection{Implementacja perceptronu wielowarstwowego}\label{sec:perceptron}
+
+Perceptron wielowarstwowy nie jest częścią tematu zadania. Powstał on jednak z myślą o weryfikacji działania sieci Kohonena oraz ułatwił określenie wadliwego komponentu całego klasyfikatora.
+
+Perceptron składał się z trzech warstw. Ilość neuronów warstwy wejściowej była różna podczas badań. Zależało to od zadanej liczby punktów kluczowych, które miał wydobyć algorytm ekstrakcji cech, oraz od ilości liczb opisujących każdy z tych punktów. W praktyce, podczas badań, ilość wejść wahała się od 512 do 4096. Na warstwę ukrytą składało się 256 neuronów w przypadku gdy było 512 wejść, oraz 512 neuronów w przypadku gdy wejść było więcej. Wielkość warstwy wyjściowej była związana z ilością osób, których odciski były rozpoznawane i wyniosła ona 51.
+
+Jako funkcji aktywacji, czyli funkcji, według której obliczana jest wartość wyjścia neuronów, użyto gotowej implementacji funkcji softmax\cite{softmax} z pakietu TensorFlow. Wraz z postępem procesu nauczania, perceptron miał za zadanie minimalizować wartość entropii krzyżowej wyrażającej się wzorem: $$-\frac{1}{n}\sum_{j=1}^{n}y_j^{(i)}\log(y_{j\_}^{(i)}) + (1  - y_j^{(i)})\log(1 - y_{j\_}^{(i)})$$
+gdzie $y_j^{(i)}$ jest wzorcowym wyjściem dla próbki $j$, $y_{j\_}^{(i)}$ jest prognozowanym wyjściem dla próbki $j$, a $n$ jest ilością wszystkich próbek treningowych.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Podsumowanie}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Wyniki}
+
+\subsection{Wnioski}
 
 \newpage
 
 \begin{thebibliography}{9}
 
+\bibitem{brief}
+\textit{BRIEF (Binary Robust Independent Elementary Features) } [online], Data dostępu: 18.01.2019. 
+\newline\url{https://docs.opencv.org/3.1.0/dc/d7d/tutorial_py_brief.html}
+
+\bibitem{fast}
+\textit{FAST Algorithm for Corner Detection} [online], Data dostępu: 18.01.2019. 
+\newline\url{https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_fast/py_fast.html}
+
 \bibitem{Kohonen}
 \textit{Sieci neuronowe - Klasyfikator Kohonena} [online], Data dostępu: 18.01.2019. 
 \newline\url{http://galaxy.agh.edu.pl/~vlsi/AI/koho_t/}
 
+\bibitem{softmax}
+\textit{Softmax} [online], Data dostępu: 18.01.2019. 
+\newline\url{https://www.tensorflow.org/api_docs/python/tf/nn/softmax}
+
+\bibitem{opencv}
+\textit{OpenCv} [online], Data dostępu: 18.01.2019. 
+\newline\url{https://opencv.org/}
 
 \end{thebibliography} 
 
@@ -126,3 +230,6 @@ Może się przyda
 \end{appendices}
 
 \end{document}
+
+% TODO
+% napisać cos o normalizacji cech

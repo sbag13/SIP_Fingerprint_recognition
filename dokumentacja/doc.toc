@@ -4,6 +4,15 @@
 \contentsline {section}{\numberline {2}Opis implementacji}{2}
 \contentsline {subsection}{\numberline {2.1}Przetwarzanie wst\IeC {\k e}pne obrazu}{2}
 \contentsline {subsection}{\numberline {2.2}Wydobywanie cech}{2}
-\contentsline {section}{\numberline {3}Podsumowanie}{2}
-\contentsline {section}{Dodatki}{4}
-\contentsline {section}{\numberline {A}Dodatek}{4}
+\contentsline {subsubsection}{\numberline {2.2.1}Algorytm Kaze}{2}
+\contentsline {subsubsection}{\numberline {2.2.2}Algorytm Sift}{2}
+\contentsline {subsubsection}{\numberline {2.2.3}Algorytm Surf}{3}
+\contentsline {subsubsection}{\numberline {2.2.4}Algorytm Orb}{3}
+\contentsline {subsubsection}{\numberline {2.2.5}Algorytm Harris Corner}{3}
+\contentsline {subsection}{\numberline {2.3}Implementacja sieci Kohonena}{3}
+\contentsline {subsection}{\numberline {2.4}Implementacja perceptronu wielowarstwowego}{4}
+\contentsline {section}{\numberline {3}Podsumowanie}{4}
+\contentsline {subsection}{\numberline {3.1}Wyniki}{4}
+\contentsline {subsection}{\numberline {3.2}Wnioski}{4}
+\contentsline {section}{Dodatki}{6}
+\contentsline {section}{\numberline {A}Dodatek}{6}
