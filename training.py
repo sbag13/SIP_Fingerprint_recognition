@@ -1,6 +1,7 @@
 from itertools import product
 from som import SOM
-from harris_corner_detection import extract_features
+import harris_corner_detection
+import feature_extractor
 from file import file_names
 import numpy as np
 from cropp_image import trim
@@ -15,7 +16,7 @@ np.set_printoptions(threshold=np.nan)
 original_images_path = './fingerprints/'
 cropped_images_path = './cropped_fingerprints/'
 # output_extracted_vector_file = 'extracted_vectors.txt'
-output_extracted_vector_file = 'null.txt'
+output_extracted_vector_file = 'harris_features.txt'
 output_properties_file = '/som_properties.txt'
 output_weightages = '/weightages'
 output_locations = '/locations'
@@ -23,6 +24,7 @@ output_locations = '/locations'
 samples = []
 samples_to_train = []
 samples_to_test = []
+
 
 def cropp_images():
     if len(os.listdir(cropped_images_path)) == 0:
@@ -47,9 +49,11 @@ def load_feature_vec(algorithm="orb"):
         print("Algorithm: %s" % algorithm)
         for i, file in enumerate(file_names_list):
             print('Extracting %d/%d' % (i + 1, len(file_names_list)), end='\r')
-            samples.append(extract_features(
-                image_path=cropped_images_path + file, algorithm=algorithm, vector_size=16))
-        sys.exit()
+            samples.append(harris_corner_detection.extract_features(
+                image_path=cropped_images_path + file))
+            # samples.append(feature_extractor.extract_features(
+            #     image_path=cropped_images_path + file, algorithm=algorithm, vector_size=16))
+        # sys.exit() # for images preview
         print('Saving feature vectors into: ' + output_extracted_vector_file)
         np.savetxt(output_extracted_vector_file, samples)
     else:
@@ -83,6 +87,7 @@ def load_samples():
 som = None
 trained_fingerprints_locations = None
 
+
 def start_neural(model_name):
     global samples_to_train
     if len(samples_to_train) == 0:
@@ -96,6 +101,7 @@ def start_neural(model_name):
 
     startLearning(samples_to_train, output, model_name)
 
+
 def continue_neural(model_name):
     global samples_to_train
     if len(samples_to_train) == 0:
@@ -108,6 +114,7 @@ def continue_neural(model_name):
         output.append(elem)
 
     continueLearning(samples_to_train, output, model_name)
+
 
 def predict_neural(model_name):
     global samples_to_test
@@ -125,9 +132,10 @@ def predict_neural(model_name):
         elem = [0] * 51
         elem[i] = 1
         output.append(elem)
-    
+
     predict(samples_to_train, output_train, 'Training data', model_name)
     predict(samples_to_test, output, 'Testing data', model_name)
+
 
 def initialize_som(max_iterations=100, n=30, m=30, dim=1024):
     global som
@@ -174,7 +182,8 @@ def map_training_vects():
     trained_fingerprints_locations = np.zeros((n, m), dtype=int)
     locations = som.map_vects(samples_to_train)
     for i in range(len(locations)):
-        trained_fingerprints_locations[locations[i][0]][locations[i][1]] = i / 7 + 1
+        trained_fingerprints_locations[locations[i]
+                                       [0]][locations[i][1]] = i / 7 + 1
 
 
 def test_accuracy():
@@ -201,7 +210,8 @@ def test_accuracy():
     locations = som.map_vects(samples_to_test)
     hits = 0
     for i in range(len(samples_to_test)):
-        guess_fingerprint_number = trained_fingerprints_locations[locations[i][0]][locations[i][1]]
+        guess_fingerprint_number = trained_fingerprints_locations[locations[i]
+                                                                  [0]][locations[i][1]]
         if guess_fingerprint_number == i + 1:
             print("GREAT HIT! sample number: %d" % (i + 1))
             hits += 1
@@ -336,10 +346,10 @@ def clear():
     som = None
     trained_fingerprints_locations = None
 
+
 def rm_features():
     if os.path.isfile(output_extracted_vector_file):
         print("Deleting features file.")
         os.remove(output_extracted_vector_file)
     else:
         print("Features file does not exist.")
-

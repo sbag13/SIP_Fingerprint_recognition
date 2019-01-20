@@ -41,7 +41,9 @@ def extract_features(image_path, corners_number=32):
     corners = cv2.goodFeaturesToTrack(gray, corners_number, 0.2, 5)
     corners = np.squeeze(np.int0(corners))
 
-    return corners[corners[:, 0].argsort()]
+    result = np.array(corners[corners[:, 0].argsort()]).flatten()
+    print(result.shape)
+    return result
 
 
 def show_detected_corners(img, corners):
@@ -54,5 +56,5 @@ def show_detected_corners(img, corners):
     cv2.destroyAllWindows()
 
 
-show_detected_corners(cv2.imread("fingerprints2/101_1.tif"), extract_features("fingerprints2/101_1.tif"))
+# show_detected_corners(cv2.imread("fingerprints2/101_1.tif"), extract_features("fingerprints2/101_1.tif"))
 
