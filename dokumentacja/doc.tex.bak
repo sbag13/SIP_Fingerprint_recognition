@@ -85,13 +85,13 @@ Sieć Kohonena posiada ograniczoną pojemność, która jest równa ilości neur
     \end{center}
 % }
 % \newline
-Znajduje się tam 408 obrazów odcisków. Wśród nich jest po 8 różnych obrazów tego samego palca, tej samej osoby. Do trenowania klasyfikatora skorzystano z 7 z nich, natomiast jeden pozostawiono do oceny jego skuteczności. Pojemność sieci musiała więc wynosić co najmniej \( \frac{7}{8} \) ilości odcisków, co jest równe 357. W praktyce wykorzystywano siatki neuronów o rozmiarach np. 35x35, co daje 1225 neuronów i powinno w zupełności wystarczyć.
+Znajduje się tam 408 obrazów odcisków. Wśród nich jest po 8 różnych obrazów tego samego palca, tej samej osoby. Do trenowania klasyfikatora skorzystano z 7 z nich, natomiast jeden pozostawiono do oceny jego skuteczności. Pojemność sieci musiała więc wynosić conajmniej \( \frac{7}{8} \) ilości odcisków, co jest równe 357. W praktyce wykorzystywano siatki neuronów o rozmiarach np. 35x35, co daje 1225 neuronów i powinno w zupełności wystarczyć.
 
-Aby uzyskać dane, które można wprowadzić na wejście sieci Kohonena należy najpierw wydobyć cechy właściwe dla konkretnego odcisku oraz je odpowiednio przygotować. Proces ten został bardziej szczegółowo opisany w punkcie \ref{sec:extraction}.
+Aby uzyskać dane, które można wprowadzić na wejście sieci Kohonena należy najpierw wydobyć cechy właściwe dla konkretnego odcisku oraz je odpowiednio przygotować. Proces ten został bardziej szczegółowo opisany w pubkcie \ref{sec:extraction}.
 
 Niezbędne jest także wstępne przetworzenie danych wejściowych, tak aby pozbyć się niepotrzebnych informacji, wyeliminować niedoskonałości, jeśli jest to możliwe lub uwydatnić cechy przydatne z punktu widzenia klasyfikacji. Ten krok został opisany w punkcie \ref{sec:preprocesing}.
 
-Do weryfikacji działania sieci Kohonena, do namierzenia ewentualnych błędów i do wyciągnięcia wniosków, na końcu projektu stworzono prosty perceptron z jedną warstwą ukrytą, co jest opisane w sekcji \ref{sec:perceptron}. Do implementacji perceptronu, ale także i do sieci Kohonena, skorzystano z biblioteki TensorFlow, która posiada wiele wbudowanych algorytmów przydatnych w tego typu zadaniach. 
+Do weryfikacji działania sieci Kohonena, do namierzenia ewentualnych błędów i do wyciągnięcia wniosków, na końcu projektu stworzono prosty perceptron z jedną warstwą ukrytą, co jest opisane w sekcji \ref{sec:perceptron}. Do implementacji perceptronu, ale także i do sieci Kohonena, skorzystanon z biblioteki TensorFlow, która posiada wiele wbudowanych algorytmów przydatnych w tego typu zadaniach. 
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -106,14 +106,14 @@ Implementację można znaleźć w publicznym repozytorium programu git, pod adre
 \subsection{Przetwarzanie wstępne obrazu}\label{sec:preprocesing}
 W celu zmaksymalizowania efektywności algorytmów detekcji cech, obrazy zostały poddane obróbce graficznej.
 
-\subsubsection{Progowanie obrazu}
-Pierwszym etapem jest progowanie obrazu mające na celu przekształcenie obrazu do postaci binarnej. Obraz wejściowy jest w postaci odcieni szarości. Piksele powyżej zadanej wartości zostają zamienione na białe, a pozostałe na czarne. Wartość progowa jest wyliczana na podstawie całego obrazu wejściowego. 
+\subsubsection{Progrowanie obrazu}
+Pierwszym etapem jest progowanie obrazu mające na celu przekształcenie obrazu do postaci binarnej. Obraz wejściowy jest w postaci odcienii szarości. Piksele powyżej zadanej wartości zostają zamienione na białe, a pozostałe na czarne. Wartość progrowa jest wyliczana na podstawie całego obrazu wejściowego. 
 
 \subsubsection{Odwrócenie kolorów}
 W celu zwiększenia efektywności procesu znajdowania szkieletu odcisku palca, kolory w obrazie zostają odwrócone. Odcisk palca z koloru czarnego zmieni się na biały, a tło z białego zmieni się na czarne. 
 
 \subsubsection{Znajdowanie szkieletu}
-Ostatnim etapem obróbki obrazu odcisku palca jest znalezienie jego szkieletu. Poddaje się go algorytmowi zaimplementowanemu w bibliotece \textit{OpenCV}. Wynikiem tej obróbki jest odcisk palca, w którym linie papilarne mają szerokość jednego piksela. Pozwala to na uwydatnienie cech kluczowych danego odcisku palca.
+Ostatnim etapem obróki obrazu odcisku palca jest znalezienie jego szkieletu. Poddaje się go algorytmowi zaimplementowanemu w bibliotece \textit{OpenCV}. Wynikiem tej obróki jest odcisk palca, w którym linie papilarne mają szerokoś jednego piksela. Pozwala to na uwydatnienie cech kluczowych danego odcisku palca.
 
 \subsection{Wydobywanie cech}\label{sec:extraction}
 
@@ -121,11 +121,11 @@ Po przetworzeniu obrazów odcisków palca należy je sprowadzić do poziomu wekt
 
 \subsubsection{Algorytm Kaze}
 
-Algorytm Kaze to wieloskalowy detektor cech w obrazach 2D oraz algorytm opisujący w nieliniowych skalach. W przeciwieństwie do SIFT i SURF, które wykorzystują liniową dyfuzję (przenikanie cząstek), operuje na nieliniowych skalach (cechy na wielu poziomach). Wykorzystuje rozmycie nieliniowe, w przeciwieństwie do wspomnianych wcześniej algorytmów co zapewnia rozmywanie cech nieistotnych dla obrazu, a uwypuklanie cech kluczowych.
+Algorytm Kaze wieloskalowy detektor cech w obrazach 2D oraz algorytm opisujący w nieliniowych skalach. W przeciwieństwie do SIFT i SURF, które wykorzystują liniową dyfuzję (przenikanie cząstek), operuje na nieliniowych skalach (cechy na wielu poziomach). Wykorzystuje rozmycie nieliniowe, w przeciwieństwie do wspomnianych wcześniej algorytmów co zapewnia rozmywanie cech nieistotnych dla obrazu, a uwypuklanie cech kluczowych.
 
 \subsubsection{Algorytm Sift}
 
-Algorytm SIFT (skaloniezmiennicze przekształcenie cech) został opracowany w celu wykrywania powtarzających się sekwencji. Używany jest również do śledzenia, rozpoznawania obiektów jak również do łączenia obrazów w panoramy. Celem algorytmu jest wyznaczenia punktów, które są niezmiennicze ze względu na skalowanie i obroty, a częściowo niezmiennicze na zmiany oświetlenia i punktu widzenia (zmiany perspektywy).
+Algorytm SIFT (skaloniezmiennicze przekształcenie cech) został opracowany w celu wykrywania powtarzających się sekwencji. Używany jest również do śledzenia, rozpoznawania obiektów jak również do łączenia obrazów w panoramy. Celem algorytmu jest wyznaczenia punktów, które są nizmiennicze ze względu na skalowanie i obroty, a częściowo niezminnicze na zmiany oświetlenia i punktu widzenia (zmiany perspektywy).
 
 Punkty skaloniezmiennicze są wydobywane w kilku krokach:
 \begin{enumerate}
@@ -145,11 +145,11 @@ Algorytm ORB (Oriented FAST and Rotated BRIEF) został stworzony przez OpenCV La
 
 \subsubsection{Detektor Harris Corner} \label{sec:harris}
 
-Detektor Harris Corner\cite{harris_corner} służy do znajdowania na obrazie krawędzi oraz innych punktów szczególnych. Dla małych wycinków obrazu wylicza on wynik, następnie przesuwa okno o zadaną odległość i liczy wynik. Gdy wynik znacząco różni się od poprzedniego, oznacza to, że znajduje się w tym miejscu krawędź lub element charakterystyczny dla badanego obrazu.
+Datektor Harris Corner\cite{harris_corner} służy do znajdowania na obrazie krawędzi oraz innych punktów szczególnych. Dla małych wycinków obrazu wyliczna on wynik, następnie przesuwa okno o zadaną odległość i liczy wynik. Gdy wynik znacząco różni się od poprzedniego, oznacza to, że znajduje się w tym miejscu krawędź lub element charakterystyczny dla badanego obrazu.
 
 \subsection{Implementacja sieci Kohonena}
 
-Sieć Kohonena należy do rzadkiej domeny uczenia bez nadzoru w sieciach neuronowych. Jest to w istocie siatka neuronów, z których każdy oznacza jedną grupę wyuczoną podczas treningu. W sztucznych sieciach neuronowych zazwyczaj nie rozważa się lokalizacji neuronów. Jednak w SOM, każdy neuron ma konkretną lokalizację, a neurony leżące blisko siebie reprezentują gromady o podobnych właściwościach. Każdy neuron posiada wektor wagowy, które podczas procesu uczenia zostały dostrojone tak, aby dany neuron reagował najmocniej na podobne dane wejściowe. Proces uczenia polega na wybraniu neuronów, które odpowiadają za daną grupę rozwiązań. Odbywa się to zazwyczaj prze losowanie wag i określenie, która z odpowiedzi neuronów była najmocniejsza. Dalej iteracyjnie zmienia się wagi, tak aby zwiększyć jeszcze bardziej odpowiedź neuronu zwycięzcy (WTA - Winner Takes All) i ewentualnie jego sąsiadów (WTM - Winner Takes Most). W tym eksperymencie zastosowano strategię WTM.
+Sieć Kohonena należy do rzadkiej domeny uczenia bez nadzoru w sieciach neuronowych. Jest to w istocie siatka neuronów, z których każdy oznacza jedną grupę wyuczoną podczas treningu. W sztucznych sieciach neuronowych zazwyczaj nie rozważa się lokalizacji neuronów. Jednak w SOM, każdy neuron ma konkretną lokalizację, a neurony leżące blisko siebie reprezentują gromady o podobnych właściwościach. Każdy neuron posiada wektor wagowy, które podczas procesu uczenia zostały dostrojone tak, aby dany neuron reagował najmocniej na podobne dane wejściowe. Proces uczenia polega na wybraniu nauronów, które odpowiadają za daną grupę rozwiązań. Odbywa się to zazwyczaj prze losowanie wag i określenie, która z odpowiedzi neuronów była najmocniejsza. Dalej iteracyjnie zmienia się wagi, tak aby zwiększyć jeszcze bardziej odpowiedź nauronu zwycięzcy (WTA - Winner Takes All) i ewentualnie jego sąsiadów (WTM - Winner Takes Most). W tym eksperymencie zastosowano strategię WTM.
 
 Do tworzenia różnych sieci Kohonena stworzono specjalną klasę, która pozwala na sparametryzowanie tego procesu. Na topologię sieci wybrano prostokątną siatkę 2D. Poniżej zaprezentowane najważniejsze parametry z punktu widzenia projektowania sieci.
 \begin{itemize}
@@ -157,17 +157,17 @@ Do tworzenia różnych sieci Kohonena stworzono specjalną klasę, która pozwal
     \\Parametr obowiązkowy.
     \item Ilość iteracji - Całkowita liczba określająca ilość iteracji do wykonania.
     \\Parametr opcjonalny. Domyślna wartość: 100.
-    \item Alfa - liczba rzeczywista określająca jak mocno mają być modyfikowane wagi aby wzmacniać odpowiednie neurony.
+    \item Alfa - liczba rzeczywista określająca jak mocno mają być modifikowane wagi aby wzmacniać odpowiednie neurony.
     \\Parametr opcjonalny. Domyślna wartość: 0.3.
     \item Sigma - liczba określająca wielkość sąsiedztwa neuronu.
     \\ Parametr opcjonalny. Domyślną wartość stanowi połowa większego z wymiarów.
 \end{itemize}
 
-Zasadniczym elementem sieci Kohonena jest funkcja określająca, który z neuronów pasuje najlepiej do danych wejściowych (ang. bmu - best matching unit). W tym przypadku będzie to neuron, dla którego wartość poniższego równania będzie jak najmniejsza.
+Zasadniczym elementem sieci Kohonena jest funkcja okreslająca, który z neuronów pasuje najlepiej do danych wejściowych (ang. bmu - best matching unit). W tym przypadku będzie to neuron, dla którego wartość poniższego równania będzie jak najmniejsza.
 \begin{center}
     $ bmu = \sqrt{\sum (w - x)^2} $ \\
 \end{center}
-\textit{w} - wektor wag pojedynczego neuronu. \\
+\textit{w} - wektor wag pojedynczego nauronu. \\
 \textit{x} - wektor danych wejściowych.
 
 Wartości alfa oraz sigma, wraz z postępem procesu uczenia, są modyfikowane w każdej iteracji, tak aby kolejne zmiany sieci były coraz mniejsze. Odbywa się to poprzez pomnożenie ich przez tak zwany współczynnik uczenia \textit{l}, który oblicza się według wzoru:
@@ -177,7 +177,7 @@ Wartości alfa oraz sigma, wraz z postępem procesu uczenia, są modyfikowane w 
 \textit{i} - numer bieżącej iteracji. \\
 \textit{n} - ilość wszystkich iteracji do wykonania.
 
-Modyfikacja wag bierze pod uwagę wszystkie przykłady trenujące. Należy pamiętać, że wszystkie opisywane operację są operacjami na macierzach. Zmiana wartości wag dla konkretnego neuronu jest sumą delt obliczonych względem każdego przypadku treningowego. Delty są natomiast różnicą między wagami danego neuronu, a konkretnym zestawem danych wejściowych, pomnożoną przez współczynnik modyfikacji \textit{m}, wyrażony równaniem:
+Modyfikacja wag bierze pod uwagę wszystkie przykłady trenujące. Należy pamietać, że wszystkie opisywane operację są operacjami na macierzach. Zmiana wartości wag dla konkretnego neuronu jest sumą delt obliczonych względem każdego przypadku treningowego. Delty są natomiast różnicą między wagami danego neuronu, a konkretnym zestawem danych wejściowych, pomnożoną przez współczynnik modyfikacji \textit{m}, wyrażony równaniem:
 \begin{center}
     $ m = \alpha \cdot e^{-(\frac{D}{\sigma})^2} $ \\
 \end{center}
@@ -202,11 +202,11 @@ gdzie $y_j^{(i)}$ jest wzorcowym wyjściem dla próbki $j$, $y_{j\_}^{(i)}$ jest
 
 \subsection{Wyniki}
 
-Pierwsze wyniki, zanim postanowiono stworzyć weryfikujący perceptron wielowarstwowy, pokazywały skuteczność sieci Kohonena nie większą niż 4\%. Dla sieci o wymiarach 25x25 możemy więc założyć, że poprawna klasyfikacja była dziełem przypadku. Podczas analizy lokalizacji neuronów, do których przypisywane były cechy odcisków palca, zauważono że wiele z nich jest mapowanych do tego samego regionu tworząc klastry. Natomiast w innych rejonach siatki były widoczne duże regiony, w których neurony nie były odpowiedzialne za żaden z odcisków. Przypuszczono więc, że problem leży po stronie algorytmu ekstrahującego  cechy z obrazów, który dla różnych odcisków zwracał podobne wektory cech. Takie działanie mogłoby powodować przypisywanie im neuronów bliskich sobie. Aby zweryfikować tę tezę podjęto decyzję o stworzeniu perceptronu, który został opisany w sekcji \ref{sec:perceptron}. Po bardzo krótkim treningu, udało się osiągnąć 100\% skuteczność dla danych trenujących, dla algorytmów Kaze i Surf. Niemniej jednak skuteczność perceptronu na ``świeżych'' danych testowych oscylowała wokół kilku procent.  
+Pierwsze wyniki, zanim postanowiono stworzyć weryfikujący perceptron wielowarstwowy, pokazywały skuteczność sieci Kohonena nie większą niż 4\%. Dla sieci o wymiarach 25x25 możemy więc założyć, że poprawna klasyfikacja była dziełem przypadku. Podczas analizy lokalizacji neuronów, do których przypisywane były cechy odcisków palca, zauważono że wiele z nich jest mapowanych do tego samego regionu tworząc klastry. Natomiast w innych rejonach siatki były widoczne duże regiony, w których neurony nie były odpowiedzialne za żaden z odcisków. Przypuszczono więc, że problem leży po stronie algorytmu ekstrahującego  cechy z obrazów, który dla różnych odcisków zwracał podobne wektory cech. Takie działanie mogłoby powodować przypisywanie im neuronów bliskich sobie. Aby zweryfikować tę tezę podjęto decyzję o stworzeniu perceptronu, który został opisany w sekcjik \ref{sec:perceptron}. Po bardzo krótkim treningu, udało się osiągnąć 100\% skuteczność dla danych trenujących, dla algorytmów Kaze i Surf. Niemniej jednak skuteczność perceptronu na ``świeżych'' danych testowych oscylowała wokół kilku procent.  
 
 \subsection{Wnioski}
 
-Otrzymane wyniki zdecydowanie nie są zadowalające. Udało się jednak stwierdzić, który komponent klasyfikatora odpowiada najprawdopodobniej za niepowodzenie. Jest to część projektu odpowiadająca za przedstawienie najważniejszych cech odcisku jako wektor liczb. Z uwagi na ograniczenia czasowe nie stwierdzono jednak konkretnie czego zabrakło. Możliwe także, że jakość wykorzystanych obrazów wymagała dużo bardziej zaawansowanych technik przetwarzania niż te, które zostały użyte. Wiadomo także, że obie części klasyfikatora odpowiadające za dalsze przetwarzanie wektorów cech (sieć Kohonena i perceptron) przy innych zastosowaniach spisują się zdecydowanie lepiej. Działanie sieci Kohonena było początkowo przetestowane na prostym przykładzie mapowania kolorów opisanych trzema liczbami (RGB), natomiast perceptron został użyty w projekcie klasyfikacji faz snu, gdzie dla nowych danych testowych uzyskał skuteczność ponad 74\%. To tym bardziej przemawia za prawdziwością tezy, że problem leży po stronie ekstrakcji cech.
+Otrzymane wyniki zdecydowanie nie są zadowalające. Udało się jednak stwierdzić, który komponent klasyfikatora odpowiada najprawdopodobniej za niepowodzenie. Jest to część projektu odpowiadająca za przedstawienie najważniejszych cech odcisku jako wetktor liczb. Z uwagi na ograniczenia czasowe nie stwierdzono jednak konkretnie czego zabrakło. Możliwe także, że jakość wykorzystanych obrazów wymagała dużo bardziej zaawansowanych technik przetwarzania niż te, które zostały użyte. Wiadomo także, że obie części klasyfikatora odpowiadające za dalsze przetwarzanie wektorów cech (sieć Kohonena i perceptron) przy innych zastosowaniach spisują się zdecydowanie lepiej. Działanie sieci Kohonena było początkowo przetestowane na prostym przykładzie mapowania kolorów opisanych trzema liczbami (RGB), natomiast perceptron został użyty w projekcie klasyfikacji faz snu, gdzie dla nowych danych testowych uzyskał skuteczność ponad 74\%. To tym bardziej przemawia za prawdziwością tezy, że problem leży po stronie ekstrakcji cech.
 
 \newpage
 
